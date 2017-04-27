@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import CommentList from './CommentList'
 
+//один файл - один компонент
 const Comments = ({comments, open, onClick}) => {
 	if (comments.length <= 0) {
 		return <h4>No comments</h4>
@@ -12,6 +13,7 @@ const Comments = ({comments, open, onClick}) => {
 export default class Article extends Component {
     state = {
         isArticleOpen: false,
+        //лучше внести этот стейт в CommentList, иначе компонент выходит очень прегруженным
 		isCommentsOpen: false
     }
 
