@@ -4,14 +4,9 @@ import Article from './Article/index'
 import PropTypes from 'prop-types'
 import accordion from '../decorators/accordion'
 import {connect} from 'react-redux'
+import _ from 'lodash'
 
 class ArticleList extends Component {
-    componentDidMount() {
-        const ref = this.refs[this.props.articles[0].id]
-        console.log('---', ref, findDOMNode(ref))
-    }
-
-
     render() {
         const {articles, toggleOpenItem, isItemOpened} = this.props
 
@@ -23,14 +18,10 @@ class ArticleList extends Component {
             />
         </li>)
         return (
-            <ul ref={this.getContainerRef}>
+            <ul>
                 {elements}
             </ul>
         )
-    }
-
-    getContainerRef = ref => {
-        this.list = ref
     }
 }
 
@@ -41,6 +32,30 @@ ArticleList.propTypes = {
     isItemOpened: PropTypes.func.isRequired
 }
 
-export default connect((state) => ({
-   articles: state.articles
-}))(accordion(ArticleList))
+const mapStateToProps = state => {
+	//FIXME - немного говнокода :(
+	//хочется это перенести в reducer - но пока не понял как
+
+	const {articles, selectedArticles, dateRange} = state
+
+	//range
+	const dates = articles.map(article => Date.parse(article.date)).sort()
+	const minFrom = _.first(dates)
+	const maxTo = _.last(dates)
+
+	const from = dateRange.from || minFrom
+	const to = dateRange.to || maxTo
+
+	//selected article
+	const selectedArticleIDs = _.isEmpty(selectedArticles)
+		? articles.map(article => article.id)
+		: selectedArticles.map(article => article.value)
+
+	return {
+		articles: articles
+		.filter(article => _.includes(selectedArticleIDs, article.id))
+		.filter(article => from <= Date.parse(article.date) && Date.parse(article.date) <= to)
+	}
+}
+
+export default connect(mapStateToProps)(accordion(ArticleList))

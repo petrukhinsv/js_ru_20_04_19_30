@@ -5,6 +5,7 @@ import Chart from './Chart'
 import UserForm from './UserForm'
 import Filters from './Filters/index'
 import Counter from './Counter'
+import {connect} from 'react-redux'
 
 class App extends Component {
     static propTypes = {
@@ -36,4 +37,6 @@ class App extends Component {
     }
 }
 
-export default App
+const mapStateToProps = state => ({articles: state.articles})
+
+export default connect(mapStateToProps)(App)
